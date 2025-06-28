@@ -18,4 +18,4 @@ EXPOSE 8000
 
 WORKDIR /app/app
 
-CMD ["sh", "-c", "alembic upgrade head && uv sync && uv run main.py"]
+CMD uv sync && uv run main.py
