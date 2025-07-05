@@ -3,7 +3,7 @@ import httpx
 from core.config import settings
 from schemas.song import SongRequest
 
-router = APIRouter()
+router = APIRouter(tags=["Песни пользователя"])
 
 @router.post("/generate-song")
 async def generate_song(request: SongRequest):

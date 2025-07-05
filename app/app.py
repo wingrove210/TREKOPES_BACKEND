@@ -5,6 +5,7 @@ from routers.track import router
 from routers.news import router as news_router
 from routers.payment import router as payment_router
 from routers.song import router as song_router
+from routers.chat import router as chat_router
 from core.logger import logger
 from core.config import settings
 from routers.assistant import router as assistant_router
@@ -55,3 +56,4 @@ app.include_router(news_router, prefix="/api")
 app.include_router(payment_router, prefix="/api")
 app.include_router(song_router, prefix="/api")
 app.include_router(assistant_router, prefix="/api")
+app.include_router(chat_router, prefix="/api")

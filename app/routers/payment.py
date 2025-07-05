@@ -3,7 +3,7 @@ import httpx
 from core.config import settings
 from schemas.payment import PaymentRequest
 
-router = APIRouter()
+router = APIRouter(tags=["Оплата"])
 
 @router.post("/process-payment")
 async def process_payment(request: PaymentRequest):

@@ -8,7 +8,7 @@ import aiohttp
 
 async def start_server():
     from uvicorn import Config, Server
-    config = Config("app:app", port=8001, host="127.0.0.1", reload=True)
+    config = Config("app:app", port=8001, host="0.0.0.0", reload=True)
     server = Server(config)
     await server.serve()
 
