@@ -36,6 +36,9 @@ class Settings(BaseSettings):
     YCL_SECRET_KEY: str
     YCL_FOLDER_ID: str
     
+    REDIS_HOST: str
+    REDIS_PORT: str
+    
 
     def generate_database_url(self) -> str:
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"

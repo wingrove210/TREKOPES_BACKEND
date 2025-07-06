@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from yandex_cloud_ml_sdk import YCloudML
 from core.config import settings
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+import redis.asyncio as redis
 
 router = APIRouter(prefix="/assistant")
 
@@ -62,17 +63,36 @@ class Messages(BaseModel):
     personal: bool
     timestamp: datetime.datetime
 
+redis_client = redis.from_url(
+    f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}", decode_responses=True
+)
+
+async def save_message_to_redis(client_id: int, message: str):
+    key = f"user:{client_id}:messages"
+    await redis_client.rpush(key, message)
+
+async def get_messages_from_redis(client_id: int):
+    key = f"user:{client_id}:messages"
+    return await redis_client.lrange(key, 0, -1)
+
 @router.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
     await manager.connect(websocket)
     try:
+        # 1. Отправить историю сообщений при подключении
+        history = await get_messages_from_redis(client_id)
+        for msg in history:
+            await websocket.send_text(msg)
+        # 2. Обычный цикл общения
         while True:
             data = await websocket.receive_text()
             text = await generate(data)
+            await save_message_to_redis(client_id, f"{data}")
+            await save_message_to_redis(client_id, f"{text}")
             await manager.broadcast(f"{text}")
     except WebSocketDisconnect:
         manager.disconnect(websocket)
         await manager.broadcast(f"Client #{client_id} left the chat")
-        
+
 
 
